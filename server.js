@@ -5,7 +5,9 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5005;
+
+
 
 app.use(cors());
 app.use(express.json());
@@ -32,6 +34,11 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+app.get('/', (req, res) => {
+  res.send('server connected');
+});
+
+
 app.post('/api/queries', async (req, res) => {
   const { userId, category, title, description, availableTime } = req.body;
 
@@ -56,13 +63,17 @@ app.get('/api/queries', async (req, res) => {
 
 app.post('/api/register', async (req, res) => {
   const { name, email, password } = req.body;
+  
 
   // Hash the password before saving to the database
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 3);
 
   const newUser = new User({ name, email, password: hashedPassword });
 
+
   try {
+
+    
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully!', user: newUser });
   } catch (error) {
